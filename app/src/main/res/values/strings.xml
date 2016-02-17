@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">UnisonScanner</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="database_address">192.168.1.115</string>
+    <string name="database_table">UnisonDev</string>
+    <string name="database_user">unison</string>
+    <string name="database_password">1qaz9ijn!</string>
 </resources>
