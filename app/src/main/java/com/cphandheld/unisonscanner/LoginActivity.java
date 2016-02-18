@@ -1,15 +1,18 @@
 package com.cphandheld.unisonscanner;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
+import android.os.Handler;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -22,9 +25,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
+
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -54,6 +58,28 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        setClickEvents();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+/*    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1)
+        {
+            if(resultCode == RESULT_OK)
+            {
+                Boolean authenticated = data.getBooleanExtra("authenticated", false);
+                if (!authenticated)
+                    Logout();
+            }
+        }
+    }*/
+
+    protected void setClickEvents()
+    {
         imageButton1 = (ImageView) findViewById(R.id.button1);
         imageButton1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,16 +167,7 @@ public class LoginActivity extends AppCompatActivity {
                 deleteEntry((String) view.getTag());
             }
         });
-
-        //test DB connection
-        //LoginPost("jmneireiter", "1qaz9ijn!");
-
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-
     protected void setEntry(String tag) {
         imageEntry1 = (ImageView) findViewById(R.id.entry1);
         imageEntry2 = (ImageView) findViewById(R.id.entry2);
@@ -169,6 +186,8 @@ public class LoginActivity extends AppCompatActivity {
         } else if (imageEntry4.getTag() == null) {
             imageEntry4.setTag(tag);
             imageEntry4.setImageResource(R.drawable.yes_pin);
+            String pin = (String)imageEntry1.getTag() + (String)imageEntry2.getTag() + (String)imageEntry3.getTag() + tag;
+            new LoginTask().execute("3", pin);
         }
     }
 
@@ -191,68 +210,6 @@ public class LoginActivity extends AppCompatActivity {
             imageEntry1.setTag(null);
             imageEntry1.setImageResource(R.drawable.no_pin);
         }
-    }
-
-    private boolean LoginPost(String username, String password) {
-        URL url;
-        HttpURLConnection connection;
-        OutputStreamWriter request;
-        JSONObject responseData;
-        JSONObject postData;
-        InputStreamReader isr;
-        String result;
-
-        try {
-            postData = new JSONObject();
-            postData.accumulate("UserName", username);
-            postData.accumulate("Password", password);
-
-            url = new URL(Utilities.AppURL + Utilities.LoginURL);
-
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setFixedLengthStreamingMode(postData.toString().length());
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setRequestProperty("Accept", "application/json");
-            connection.setRequestProperty("Content-type", "application/json");
-            connection.setRequestMethod("POST");
-
-            Log.v("login post", "here");
-            request = new OutputStreamWriter(connection.getOutputStream());
-            Log.v("login post", "here2");
-            request.write(postData.toString());
-            request.flush();
-            request.close();
-
-
-            isr = new InputStreamReader(connection.getInputStream());
-            result = Utilities.StreamToString(isr);
-            responseData = new JSONObject(new JSONObject(result).get("responseText").toString());
-
-            if (responseData.getBoolean("success")) {
-                Utilities.currentUser = new User();
-                Utilities.currentUser.name = responseData.getString("userName");
-                Utilities.currentUser.organizationId = responseData.getInt("organizationId");
-                Utilities.currentUser.userId = responseData.getInt("userId");
-                Utilities.currentUser.email = responseData.getString("email");
-
-                return true;
-            }
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        return false;
     }
 
     @Override
@@ -293,5 +250,137 @@ public class LoginActivity extends AppCompatActivity {
         );
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
+    }
+
+    private class LoginTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            //Toast.makeText(getApplicationContext(), "Logging in...", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            Utilities.currentUser = null;
+            if (LoginPost(Integer.parseInt(params[0]), params[1])) {
+                Intent i = new Intent(LoginActivity.this, LocationActivity.class);
+                startActivity(i);
+                return null;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            if (Utilities.currentUser != null) {
+                //Toast.makeText(getApplicationContext(), Utilities.currentUser.name + " logged in", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Invalid PIN", Toast.LENGTH_SHORT).show();
+                imageEntry1.setImageResource(R.drawable.pin_x);
+                imageEntry2.setImageResource(R.drawable.pin_x);
+                imageEntry3.setImageResource(R.drawable.pin_x);
+                imageEntry4.setImageResource(R.drawable.pin_x);
+
+                final Vibrator vibe = (Vibrator) LoginActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
+                vibe.vibrate(200);
+
+
+                YoYo.with(Techniques.Shake)
+                        .duration(1000)
+                        .playOn(imageEntry1);
+
+                YoYo.with(Techniques.Shake)
+                        .duration(1000)
+                        .playOn(imageEntry2);
+
+                YoYo.with(Techniques.Shake)
+                        .duration(1000)
+                        .playOn(imageEntry3);
+
+                YoYo.with(Techniques.Shake)
+                        .duration(1000)
+                        .playOn(imageEntry4);
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageEntry1.setImageResource(R.drawable.no_pin);
+                        imageEntry2.setImageResource(R.drawable.no_pin);
+                        imageEntry3.setImageResource(R.drawable.no_pin);
+                        imageEntry4.setImageResource(R.drawable.no_pin);
+                        imageEntry1.setTag(null);
+                        imageEntry2.setTag(null);
+                        imageEntry3.setTag(null);
+                        imageEntry4.setTag(null);
+                    }
+                }, 1500);
+            }
+        }
+
+        private boolean LoginPost(int organizationId, String pin) {
+            URL url;
+            HttpURLConnection connection;
+            OutputStreamWriter request;
+            JSONObject responseData;
+            JSONObject postData;
+            InputStreamReader isr;
+            String result;
+
+            try {
+                postData = new JSONObject();
+                postData.accumulate("OrganizationId", organizationId);
+                postData.accumulate("Pin", pin);
+
+                url = new URL(Utilities.AppURL + Utilities.LoginURL);
+
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setFixedLengthStreamingMode(postData.toString().length());
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setRequestProperty("Content-type", "application/json");
+                connection.setRequestMethod("POST");
+
+                request = new OutputStreamWriter(connection.getOutputStream());
+                request.write(postData.toString());
+                request.flush();
+                request.close();
+
+                if (connection.getResponseCode() == 200) {
+                    isr = new InputStreamReader(connection.getInputStream());
+                    result = Utilities.StreamToString(isr);
+                    responseData = new JSONObject(result);
+
+                    Utilities.currentUser = new User();
+                    Utilities.currentUser.organizationId = organizationId;
+                    Utilities.currentUser.userId = responseData.getInt("UserId");
+                    Utilities.currentUser.name = responseData.getString("Name");
+
+                    Utilities.currentContext = new CurrentContext();
+                    Utilities.currentContext.organizationId = organizationId;
+
+                    return true;
+                } else
+                    return false;
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
+
+            return false;
+        }
+    }
+
+    public void Logout()
+    {
+        Toast.makeText(getApplicationContext(), "Logged out", Toast.LENGTH_SHORT).show();
+        imageEntry1.setImageResource(R.drawable.no_pin);
+        imageEntry2.setImageResource(R.drawable.no_pin);
+        imageEntry3.setImageResource(R.drawable.no_pin);
+        imageEntry4.setImageResource(R.drawable.no_pin);
+        imageEntry1.setTag(null);
+        imageEntry2.setTag(null);
+        imageEntry3.setTag(null);
+        imageEntry4.setTag(null);
     }
 }

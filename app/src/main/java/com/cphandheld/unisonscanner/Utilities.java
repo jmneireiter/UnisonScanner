@@ -27,10 +27,13 @@ import java.util.UUID;
 public class Utilities {
 
     // static values
-    public static final String AppURL = "http://unison-alt.cphandheld.com/";
-    public static final String LoginURL = "api/authorize/";
+    public static final String AppURL = "http://unison-dev.cphandheld.com/";
+    public static final String LoginURL = "api/Users/ScannerLogin/";
+    public static final String LocationsURL = "api/Locations/Organization/";
+    public static final String AppURLSuffix = "/CheckInApp";
 
     public static User currentUser = new User();
+    public static CurrentContext currentContext = new CurrentContext();
 
     public static String StreamToString(InputStreamReader isr) throws IOException
     {
