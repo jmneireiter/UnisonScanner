@@ -1,15 +1,22 @@
 package com.cphandheld.unisonscanner;
 
 import android.content.Intent;
-import android.location.Location;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ScanActivity extends AppCompatActivity {
+import com.symbol.emdk.EMDKManager;
+import com.symbol.emdk.EMDKManager.EMDKListener;
+import com.symbol.emdk.barcode.ScanDataCollection;
+import com.symbol.emdk.barcode.Scanner.DataListener;
+import com.symbol.emdk.barcode.Scanner.StatusListener;
+import com.symbol.emdk.barcode.StatusData;
+
+public class ScanActivity extends ActionBarActivity
+{
 
     TextView textUser;
     TextView textDealership;

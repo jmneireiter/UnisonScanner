@@ -1,12 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="com.cphandheld.unisonscanner.ScanActivity">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.cphandheld.unisonscanner.ScanActivity">
 
-    <include layout="@layout/content_scan" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#5BA8D3">
 
-</android.support.design.widget.CoordinatorLayout>
+        <TextView
+            android:id="@+id/textUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:fontFamily="Lato Medium"
+            android:text="HELLO"
+            android:gravity="end"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:id="@+id/textDealership"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:fontFamily="Lato Medium"
+            android:text="DEALERSHIP"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:id="@+id/enterPin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="50dp"
+            android:textSize="15sp"
+            android:textColor="@android:color/white"
+            android:fontFamily="Lato Regular"
+            android:text="SCAN VEHICLE"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_marginTop="250dp"
+        android:gravity="center_horizontal"
+        android:text="- - - - - - - - - - - - - - - - -"
+        android:fontFamily="Lato Medium"
+        android:textSize="24dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginLeft="40dp"/>
+
+    <Button
+        android:id="@+id/buttonLogout"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="540dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="#3F6CA6"
+        android:text="LOGOUT"
+        android:fontFamily="Lato Regular"
+        android:textColor="@android:color/white">
+
+    </Button>
+
+
+
+</RelativeLayout>
