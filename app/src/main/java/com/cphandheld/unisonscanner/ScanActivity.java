@@ -12,6 +12,7 @@ import android.widget.Toast;
 public class ScanActivity extends AppCompatActivity {
 
     TextView textUser;
+    TextView textDealership;
     Button buttonLogout;
 
     @Override
@@ -21,6 +22,9 @@ public class ScanActivity extends AppCompatActivity {
 
         textUser = (TextView) findViewById(R.id.textUser);
         textUser.setText("HELLO, " + Utilities.currentUser.name.toUpperCase());
+
+        textDealership = (TextView) findViewById(R.id.textDealership);
+        textDealership.setText(Utilities.currentContext.locationName.toUpperCase());
 
         buttonLogout = (Button) findViewById(R.id.buttonLogout);
         buttonLogout.setOnClickListener(new View.OnClickListener() {

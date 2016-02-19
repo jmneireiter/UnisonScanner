@@ -54,8 +54,9 @@ public class LocationActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(LocationActivity.this, ScanActivity.class);
                 Utilities.currentContext.locationId = locId;
+                Utilities.currentContext.locationName = name;
                 Log.i("Locations", name);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -70,14 +71,25 @@ public class LocationActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
+        if (requestCode == 1)
+        {
+            if (resultCode == RESULT_OK)
+            {
                 Boolean backPress = data.getBooleanExtra("back", false);
 
                 if(backPress)
+                {
                     listLocations.clearChoices();
+
+                    for (int i=0; i<listLocations.getCount(); i++)
+                    {
+                        View view = listLocations.getChildAt(i);
+                        view.setBackgroundColor(0x00000000);
+                    }
+                }
             }
         }
     }

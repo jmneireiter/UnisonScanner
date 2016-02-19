@@ -9,6 +9,7 @@ public class CurrentContext implements Serializable
 {
     int organizationId;
     int locationId;
+    String locationName;
     String vin;
     int bin;
     String path;
