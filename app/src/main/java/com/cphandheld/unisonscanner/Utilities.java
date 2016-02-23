@@ -30,6 +30,7 @@ public class Utilities {
     public static final String AppURL = "http://unison-dev.cphandheld.com/";
     public static final String LoginURL = "api/Users/ScannerLogin/";
     public static final String LocationsURL = "api/Locations/Organization/";
+    public static final String OrganizationsURL = "api/Organizations";
     public static final String AppURLSuffix = "/CheckInApp";
 
     public static User currentUser = new User();

@@ -1,11 +1,17 @@
 package com.cphandheld.unisonscanner;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +34,8 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
     TextView textUser;
     TextView textDealership;
     TextView textVIN;
-    Button buttonLogout;
+    TextView textStatus;
+    ImageView imageStatus;
 
     private EMDKManager emdkManager = null;
     private BarcodeManager barcodeManager = null;
@@ -40,6 +47,9 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
         setContentView(R.layout.activity_scan);
 
         textVIN = (TextView) findViewById(R.id.textVIN);
+        textStatus = (TextView) findViewById(R.id.textStatus);
+        imageStatus = (ImageView) findViewById(R.id.imageStatus);
+        imageStatus.setVisibility(View.INVISIBLE);
 
         textUser = (TextView) findViewById(R.id.textUser);
         textUser.setText("HELLO, " + Utilities.currentUser.name.toUpperCase());
@@ -47,28 +57,45 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
         textDealership = (TextView) findViewById(R.id.textDealership);
         textDealership.setText(Utilities.currentContext.locationName.toUpperCase());
 
-        buttonLogout = (Button) findViewById(R.id.buttonLogout);
-        buttonLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Logged out", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(ScanActivity.this, LoginActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-            }
-        });
-
         EMDKResults results = EMDKManager.getEMDKManager(
                 getApplicationContext(), this);
         // Check the return status of getEMDKManager and update the status Text
         // View accordingly
         if (results.statusCode != EMDKResults.STATUS_CODE.SUCCESS) {
-            //statusTextView.setText("EMDKManager Request Failed");
+            textStatus.setText("EMDKManager Request Failed");
         }
     }
 
-    public void onBackPressed() {
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.header_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.logout:
+                onClosed();
+
+                Toast toast = Toast.makeText(getApplicationContext(), "Logged out", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.BOTTOM, 0, 75);
+                toast.show();
+
+                Intent i = new Intent(ScanActivity.this, LoginActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void onBackPressed()
+    {
+        onClosed();
+
         Intent i = new Intent(ScanActivity.this, LocationActivity.class);
         i.putExtra("back", true);
         setResult(RESULT_OK, i);
@@ -118,9 +145,9 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
         }
 
         // Toast to indicate that the user can now start scanning
-        Toast.makeText(ScanActivity.this,
-                "Press Hard Scan Button to start scanning...",
-                Toast.LENGTH_SHORT).show();
+        Toast toast = Toast.makeText(ScanActivity.this, "Press Scan Button to start scanning...", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM, 0, 200);
+        toast.show();
 
     }
 
@@ -147,9 +174,6 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
         new AsyncStatusUpdate().execute(statusData);
     }
 
-    // Update the scan data on UI
-    int dataLength = 0;
-
     // AsyncTask that configures the scanned data on background
     // thread and updated the result on UI thread with scanned data and type of
     // label
@@ -171,30 +195,32 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
                 // which
                 // the scanner can be turned ON either by pressing a hardware
                 // trigger or can be turned ON automatically.
-                scanner.read();
+                //scanner.read();
 
                 ScanDataCollection scanDataCollection = params[0];
 
                 // The ScanDataCollection object gives scanning result and the
                 // collection of ScanData. So check the data and its status
-                if (scanDataCollection != null
-                        && scanDataCollection.getResult() == ScannerResults.SUCCESS) {
+                if (scanDataCollection != null && scanDataCollection.getResult() == ScannerResults.SUCCESS)
+                {
 
-                    ArrayList<ScanDataCollection.ScanData> scanData = scanDataCollection
-                            .getScanData();
+                    ArrayList<ScanDataCollection.ScanData> scanData = scanDataCollection.getScanData();
 
                     // Iterate through scanned data and prepare the statusStr
-                    for (ScanDataCollection.ScanData data : scanData) {
+                    for (ScanDataCollection.ScanData data : scanData)
+                    {
                         // Get the scanned data
-                        String barcodeDate = data.getData();
+                        String barcode = data.getData();
                         // Get the type of label being scanned
-                        ScanDataCollection.LabelType labelType = data.getLabelType();
+                        //ScanDataCollection.LabelType labelType = data.getLabelType();
                         // Concatenate barcode data and label type
-                        statusStr = barcodeDate + " " + labelType;
+                        statusStr = barcode;  // + " " + labelType; -- don't need to display label
                     }
                 }
 
-            } catch (ScannerException e) {
+            }
+            catch (Exception e)
+            {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
@@ -204,16 +230,26 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            // Update the dataView EditText on UI thread with barcode data and
-            // its label type
-            if (dataLength++ > 17) {
-                // Clear the cache after 50 scans
-                //dataView.getText().clear();
-                Toast.makeText(ScanActivity.this, "Scanned VIN is too long", Toast.LENGTH_SHORT).show();
-                dataLength = 0;
+        protected void onPostExecute(String result)
+        {
+            String barcode = CheckVinSpecialCases(result);
+
+            if (barcode.length() != 17)
+            {
+                Toast.makeText(ScanActivity.this, "Scanned VIN is not 17 characters", Toast.LENGTH_SHORT).show();
+
+                textVIN.setText("- - - - - - - - - - - - - - - - -"); //reset to blank VIN, just in case
+                imageStatus.setImageResource(R.drawable.x);
+                imageStatus.setVisibility(View.VISIBLE);
             }
-            textVIN.setText(result);
+            else
+            {
+                textVIN.setText(result);
+                imageStatus.setImageResource(R.drawable.check);
+                imageStatus.setVisibility(View.VISIBLE);
+
+                Toast.makeText(ScanActivity.this, "Verifying vehicle...", Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
@@ -230,42 +266,53 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
     private class AsyncStatusUpdate extends AsyncTask<StatusData, Void, String> {
 
         @Override
-        protected String doInBackground(StatusData... params) {
+        protected String doInBackground(StatusData... params)
+        {
             String statusStr = "";
             // Get the current state of scanner in background
             StatusData statusData = params[0];
             StatusData.ScannerStates state = statusData.getState();
             // Different states of Scanner
-            switch (state) {
-                // Scanner is IDLE
-                case IDLE:
-                    statusStr = "The scanner enabled and its idle";
-                    break;
-                // Scanner is SCANNING
-                case SCANNING:
-                    statusStr = "Scanning..";
-                    break;
-                // Scanner is waiting for trigger press
-                case WAITING:
-                    statusStr = "Waiting for trigger press..";
-                    break;
-                // Scanner is not enabled
-                case DISABLED:
-                    statusStr = "Scanner is not enabled";
-                    break;
-                default:
-                    break;
-            }
 
+            try
+            {
+                switch (state)
+                {
+                    // Scanner is IDLE
+                    case IDLE:
+                        statusStr = "The scanner is enabled and is idle";
+
+                        // if scanner is IDLE, set scanner to "read" mode, which changes state to WAITING
+                        if (!scanner.isReadPending())
+                            scanner.read();
+                        break;
+                    // Scanner is SCANNING
+                    case SCANNING:
+                        statusStr = "Scanning...";
+                        break;
+                    // Scanner is waiting for trigger press
+                    case WAITING:
+                        statusStr = "Waiting for trigger press...";
+                        break;
+                    // Scanner is not enabled
+                    case DISABLED:
+                        statusStr = "Scanner is not enabled.";
+                        break;
+                    default:
+                        break;
+                }
+            } catch (ScannerException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             // Return result to populate on UI thread
             return statusStr;
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            // Update the status text view on UI thread with current scanner
-            // state
-            //statusTextView.setText(result);
+        protected void onPostExecute(String result)
+        {
+            textStatus.setText(result);
         }
 
         @Override
@@ -296,11 +343,29 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
                 // releases the scanner hardware resources for other application
                 // to use. You must call this as soon as you're done with the
                 // scanning.
+                if (scanner.isReadPending())
+                    scanner.cancelRead();
+
                 scanner.disable();
                 scanner = null;
             }
         } catch (ScannerException e) {
             e.printStackTrace();
         }
+    }
+
+    private String CheckVinSpecialCases(String vin)
+    {
+        String formattedVIN = vin;
+
+        if (vin.length() > 17)
+        {
+            if (vin.substring(0, 1).toUpperCase().equals("I") || vin.substring(0, 1).toUpperCase().equals("A") || vin.substring(0, 1).equals(" ")) // Ford, Mazda, Honda Issues
+                formattedVIN = vin.substring(1, 17);
+            else if (vin.length() == 18)
+                formattedVIN = vin.substring(0, 17); // Lexus Issue
+        }
+
+        return formattedVIN;
     }
 }

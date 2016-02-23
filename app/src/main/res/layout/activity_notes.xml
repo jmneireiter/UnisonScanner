@@ -4,12 +4,12 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="com.cphandheld.unisonscanner.ScanActivity">
+                tools:context="com.cphandheld.unisonscanner.NotesActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:background="#5BA8D3">
+        android:background="#3F6CA6">
 
         <TextView
             android:id="@+id/textUser"
@@ -43,7 +43,7 @@
             android:textSize="15sp"
             android:textColor="@android:color/white"
             android:fontFamily="Lato Regular"
-            android:text="SCAN VEHICLE"/>
+            android:text="PATH NOTES"/>
 
     </RelativeLayout>
 
@@ -51,31 +51,11 @@
         android:id="@+id/textVIN"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="80dp"
         android:gravity="center_horizontal"
         android:text="- - - - - - - - - - - - - - - - -"
         android:fontFamily="Lato Medium"
         android:textSize="24dp"
-        android:layout_marginRight="40dp"
-        android:layout_marginLeft="40dp"/>
-
-    <ImageView
-        android:id="@+id/imageStatus"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/check"
-        android:layout_below="@id/textVIN"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"/>
-
-    <TextView
-        android:id="@+id/textStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="400dp"
-        android:gravity="center_horizontal"
-        android:fontFamily="Lato Medium"
-        android:textSize="12dp"
         android:layout_marginRight="40dp"
         android:layout_marginLeft="40dp"/>
 

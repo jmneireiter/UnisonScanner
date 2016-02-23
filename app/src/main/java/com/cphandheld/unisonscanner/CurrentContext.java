@@ -11,8 +11,12 @@ public class CurrentContext implements Serializable
     int locationId;
     String locationName;
     String vin;
-    int bin;
-    String path;
+    int year;
+    String make;
+    String model;
+    int binId;
+    int pathId;
+    String notes;
 
     CurrentContext() {
     }

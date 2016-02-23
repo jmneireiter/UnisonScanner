@@ -5,6 +5,10 @@ import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -44,6 +48,8 @@ public class LocationActivity extends ActionBarActivity
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
                 view.setBackgroundColor(0xFFD6ECDD);
+                TextView textView = (TextView) view.findViewById(R.id.rowTextView);
+                textView.setTextColor(0XFF3FA577);
 
                 Locations loc = (Locations)locs.get(position);
                 int locId = loc.locationId;
@@ -61,13 +67,37 @@ public class LocationActivity extends ActionBarActivity
     }
 
     public void onBackPressed() {
-        Toast.makeText(getApplicationContext(), "Logged out", Toast.LENGTH_SHORT).show();
+        logout();
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.header_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.logout:
+                logout();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void logout()
+    {
+        Toast toast = Toast.makeText(getApplicationContext(), "Logged out", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM, 0, 75);
+        toast.show();
+
         Intent i = new Intent(this, LoginActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
     }
-
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
