@@ -32,6 +32,9 @@ public class Utilities {
     public static final String LocationsURL = "api/Locations/Organization/";
     public static final String OrganizationsURL = "api/Organizations";
     public static final String AppURLSuffix = "/CheckInApp";
+    public static final String BinsURL = "api/Bins/Location/";
+    public static final String PathURL = "api/PathTemplate/Location/";
+    public static final String VehicleInfoURL = "api/TicketHeader/DecodeVin/";
 
     public static User currentUser = new User();
     public static CurrentContext currentContext = new CurrentContext();

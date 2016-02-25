@@ -4,42 +4,18 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/colorDefaultBg"
                 tools:context="com.cphandheld.unisonscanner.LocationActivity">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="#3FA577">
-
-        <TextView
-            android:id="@+id/textUser"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@android:color/white"
-            android:fontFamily="Lato Medium"
-            android:text="HELLO"
-            android:gravity="end"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="10dp"/>
-
-        <TextView
-            android:id="@+id/enterPin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="50dp"
-            android:textSize="15dp"
-            android:textColor="@android:color/white"
-            android:fontFamily="Lato Regular"
-            android:text="SELECT LOCATION"/>
-
-    </RelativeLayout>
+    <include layout="@layout/header"></include>
 
     <ListView
         android:id="@+id/listLocations"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_marginTop="80dp" />
+        android:layout_marginTop="80dp"
+        android:padding="20dp"
+        android:divider="@color/colorDefaultBg"
+        android:dividerHeight="10dp"/>
 
 </RelativeLayout>

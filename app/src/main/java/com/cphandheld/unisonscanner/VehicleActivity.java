@@ -9,14 +9,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class VehicleActivity extends ActionBarActivity
+public class VehicleActivity extends HeaderActivity
 {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vehicle);
+        setHeader(R.color.colorVehicleHeader, Utilities.currentUser.name, Utilities.currentContext.locationName, R.string.vehicle_header);
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {

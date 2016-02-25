@@ -1,16 +1,13 @@
 package com.cphandheld.unisonscanner;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,12 +24,18 @@ import com.symbol.emdk.barcode.ScannerException;
 import com.symbol.emdk.barcode.ScannerResults;
 import com.symbol.emdk.barcode.StatusData;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
-public class ScanActivity extends ActionBarActivity implements EMDKListener, StatusListener, DataListener
+public class ScanActivity extends HeaderActivity implements EMDKListener, StatusListener, DataListener
 {
-    TextView textUser;
-    TextView textDealership;
+
     TextView textVIN;
     TextView textStatus;
     ImageView imageStatus;
@@ -42,20 +45,16 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
     private Scanner scanner = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
+        setHeader(R.color.colorScanHeader, Utilities.currentUser.name, Utilities.currentContext.locationName, R.string.scan_header);
 
         textVIN = (TextView) findViewById(R.id.textVIN);
         textStatus = (TextView) findViewById(R.id.textStatus);
         imageStatus = (ImageView) findViewById(R.id.imageStatus);
         imageStatus.setVisibility(View.INVISIBLE);
 
-        textUser = (TextView) findViewById(R.id.textUser);
-        textUser.setText("HELLO, " + Utilities.currentUser.name.toUpperCase());
-
-        textDealership = (TextView) findViewById(R.id.textDealership);
-        textDealership.setText(Utilities.currentContext.locationName.toUpperCase());
 
         EMDKResults results = EMDKManager.getEMDKManager(
                 getApplicationContext(), this);
@@ -102,6 +101,25 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
         finish();
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                Boolean backPress = data.getBooleanExtra("back", false);
+
+                if(backPress)
+                {
+                    textVIN.setText(R.string.empty_vin);
+                    imageStatus.setVisibility(View.INVISIBLE);
+                    onOpened(emdkManager);
+                }
+            }
+        }
+    }
+
     private void initializeScanner() throws ScannerException
     {
 
@@ -143,11 +161,12 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
         } catch (ScannerException e) {
             e.printStackTrace();
         }
-
+/*
         // Toast to indicate that the user can now start scanning
         Toast toast = Toast.makeText(ScanActivity.this, "Press Scan Button to start scanning...", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.BOTTOM, 0, 200);
         toast.show();
+*/
 
     }
 
@@ -248,7 +267,9 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
                 imageStatus.setImageResource(R.drawable.check);
                 imageStatus.setVisibility(View.VISIBLE);
 
-                Toast.makeText(ScanActivity.this, "Verifying vehicle...", Toast.LENGTH_SHORT).show();
+                Utilities.currentContext.vehicle = new Vehicle();
+                Utilities.currentContext.vehicle.vin = result;
+                new VerifyVehicleTask().execute(result);
             }
         }
 
@@ -280,7 +301,7 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
                 {
                     // Scanner is IDLE
                     case IDLE:
-                        statusStr = "The scanner is enabled and is idle";
+                        statusStr = "The scanner is enabled and is idle.";
 
                         // if scanner is IDLE, set scanner to "read" mode, which changes state to WAITING
                         if (!scanner.isReadPending())
@@ -367,5 +388,80 @@ public class ScanActivity extends ActionBarActivity implements EMDKListener, Sta
         }
 
         return formattedVIN;
+    }
+
+    private class VerifyVehicleTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            //Toast.makeText(getApplicationContext(), "Verifying vehicle information...", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+
+            if (VerifyVehicle((params[0])))
+            {
+                onClosed();
+                Intent i = new Intent(ScanActivity.this, BinActivity.class);
+                startActivity(i);
+                return null;
+            }
+            else
+            {
+                onClosed();
+                Intent i = new Intent(ScanActivity.this, VehicleActivity.class);
+                startActivity(i);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+
+        }
+
+        private boolean VerifyVehicle(String vin) {
+                URL url;
+                HttpURLConnection connection;
+                JSONObject responseData;
+                InputStreamReader isr;
+                String result;
+
+                try
+                {
+                    String address = Utilities.AppURL + Utilities.VehicleInfoURL + vin;
+                    url = new URL(address);
+                    connection = (HttpURLConnection) url.openConnection();
+                    isr = new InputStreamReader(connection.getInputStream());
+
+                    if (connection.getResponseCode() == 200)
+                    {
+                        result = Utilities.StreamToString(isr);
+                        responseData = new JSONObject(result);
+
+                        Boolean success = responseData.getBoolean("Success");
+
+                        if (success)
+                        {
+                            JSONObject veh = responseData.getJSONObject("Vehicle");
+                            Utilities.currentContext.vehicle.year = veh.getInt("Year");
+                            Utilities.currentContext.vehicle.make = veh.getString("Make");
+                            Utilities.currentContext.vehicle.model = veh.getString("Model");
+                            Utilities.currentContext.vehicle.color = veh.getString("Color");
+                            return true;
+                        }
+                        else
+                            return false;
+                    }
+                    else
+                        return false;
+                } catch (JSONException | IOException e)
+                {
+                    e.printStackTrace();
+                }
+
+            return false;
+        }
     }
 }

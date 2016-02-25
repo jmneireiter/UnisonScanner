@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">UnisonScanner</string>
     <string name="admin_password">1204</string>
+    <string name="hello_admin">ADMIN</string>
+    <string name="default_header">UNISON SCANNER APP</string>
+    <string name="empty_org">(NO ORGANIZATION SELECTED)</string>
+    <string name="empty_vin">- - - - - - - - - - - - - - - - -</string>
+    <string name="login_header">ENTER PIN</string>
+    <string name="org_header">SELECT ORGANIZATION</string>
+    <string name="loc_header">SELECT LOCATION</string>
+    <string name="scan_header">SCAN VEHICLE</string>
+    <string name="bin_header">SELECT BIN</string>
+    <string name="vehicle_header">VEHICLE INFO</string>
+    <string name="path_header">SELECT PATH</string>
+    <string name="notes_header">PATH NOTES</string>
+    <string name="footer">A Product of CP Handheld</string>
+    <string name="greeting">HELLO,</string>
+    <string name="notes_text_header">NOTES -</string>
+    <string name="check_in_button">CHECK IN</string>
 </resources>

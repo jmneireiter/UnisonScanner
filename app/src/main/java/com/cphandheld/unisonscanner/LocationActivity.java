@@ -26,20 +26,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class LocationActivity extends ActionBarActivity
+public class LocationActivity extends HeaderActivity
 {
-
-    TextView textUser;
     ListView listLocations;
     ArrayList locs;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
-
-        textUser = (TextView) findViewById(R.id.textUser);
-        textUser.setText("HELLO, " + Utilities.currentUser.name.toUpperCase());
+        setHeader(R.color.colorLocHeader, Utilities.currentUser.name, "", R.string.loc_header);
 
         listLocations = (ListView) findViewById(R.id.listLocations);
         listLocations.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -47,9 +43,9 @@ public class LocationActivity extends ActionBarActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                view.setBackgroundColor(0xFFD6ECDD);
                 TextView textView = (TextView) view.findViewById(R.id.rowTextView);
-                textView.setTextColor(0XFF3FA577);
+                textView.setTextColor(getResources().getColor(R.color.colorLocTextSelected));
+                view.setBackgroundColor(getResources().getColor(R.color.colorLocBgSelected));
 
                 Locations loc = (Locations)locs.get(position);
                 int locId = loc.locationId;
@@ -58,7 +54,6 @@ public class LocationActivity extends ActionBarActivity
                 Intent intent = new Intent(LocationActivity.this, ScanActivity.class);
                 Utilities.currentContext.locationId = locId;
                 Utilities.currentContext.locationName = name;
-                Log.i("Locations", name);
                 startActivityForResult(intent, 1);
             }
         });
@@ -90,7 +85,7 @@ public class LocationActivity extends ActionBarActivity
     private void logout()
     {
         Toast toast = Toast.makeText(getApplicationContext(), "Logged out", Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.BOTTOM, 0, 75);
+        toast.setGravity(Gravity.BOTTOM, 0, 70);
         toast.show();
 
         Intent i = new Intent(this, LoginActivity.class);
@@ -98,6 +93,7 @@ public class LocationActivity extends ActionBarActivity
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
     }
+
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
@@ -114,7 +110,9 @@ public class LocationActivity extends ActionBarActivity
                     for (int i=0; i<listLocations.getCount(); i++)
                     {
                         View view = listLocations.getChildAt(i);
-                        view.setBackgroundColor(0x00000000);
+                        TextView textView = (TextView) view.findViewById(R.id.rowTextView);
+                        textView.setTextColor(getResources().getColor(R.color.colorListTextUnselected));
+                        view.setBackgroundColor(getResources().getColor(R.color.colorListBgUnselected));
                     }
                 }
             }
@@ -137,7 +135,7 @@ public class LocationActivity extends ActionBarActivity
         @Override
         protected void onPostExecute(Void unused) {
               if (locs != null && locs.size() > 0) {
-                  ArrayAdapter<Locations> adapter = new ArrayAdapter<Locations>(LocationActivity.this, R.layout.list_locations, locs);
+                  ArrayAdapter<Locations> adapter = new ArrayAdapter<Locations>(LocationActivity.this, R.layout.generic_list, locs);
                   listLocations.setAdapter(adapter);
               }
         }

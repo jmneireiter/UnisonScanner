@@ -4,59 +4,43 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/colorDefaultBg"
                 tools:context="com.cphandheld.unisonscanner.PathActivity">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="#3F6CA6">
-
-        <TextView
-            android:id="@+id/textUser"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@android:color/white"
-            android:fontFamily="Lato Medium"
-            android:text="HELLO"
-            android:gravity="end"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="10dp" />
-
-        <TextView
-            android:id="@+id/textDealership"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@android:color/white"
-            android:fontFamily="Lato Medium"
-            android:text="DEALERSHIP"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp" />
-
-        <TextView
-            android:id="@+id/textHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="50dp"
-            android:textSize="15sp"
-            android:textColor="@android:color/white"
-            android:fontFamily="Lato Regular"
-            android:text="SELECT PATH"/>
-
-    </RelativeLayout>
+    <include layout="@layout/header"></include>
 
     <TextView
         android:id="@+id/textVIN"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="90dp"
         android:gravity="center_horizontal"
-        android:text="- - - - - - - - - - - - - - - - -"
+        android:text="@string/empty_vin"
         android:fontFamily="Lato Medium"
-        android:textSize="24dp"
+        android:textColor="@color/colorSubHeaderText"
+        android:textSize="20sp"
         android:layout_marginRight="40dp"
         android:layout_marginLeft="40dp"/>
+
+    <TextView
+        android:id="@+id/textBin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:gravity="center_horizontal"
+        android:fontFamily="Lato Medium"
+        android:textColor="@color/colorSubHeaderText"
+        android:textSize="12sp"
+        android:layout_marginRight="40dp"
+        android:layout_marginLeft="40dp"/>
+
+    <ListView
+        android:id="@+id/listPaths"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="130dp"
+        android:padding="20dp"
+        android:divider="@color/colorDefaultBg"
+        android:dividerHeight="10dp"/>
 
 </RelativeLayout>

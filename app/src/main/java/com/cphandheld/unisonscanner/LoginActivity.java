@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
@@ -51,8 +52,10 @@ public class LoginActivity extends ActionBarActivity {
     ImageView imageEntry4;
     ImageView imageBack;
     ImageView imageLogo;
+    TextView textOrgName;
 
     int organizationId = -1;
+    String organizationName = "";
     int clickCount = 0;
     boolean isAdmin = false;
 
@@ -69,7 +72,14 @@ public class LoginActivity extends ActionBarActivity {
 
         // Restore preferences
         SharedPreferences settings = getSharedPreferences(PREFS_FILE, 0);
-        organizationId = settings.getInt("orgId", 3);
+        organizationId = settings.getInt("orgId", -1);
+        organizationName = settings.getString("orgName", "");
+
+        if (!organizationName.equals(""))
+        {
+            textOrgName = (TextView) findViewById(R.id.textOrgName);
+            textOrgName.setText(organizationName.toUpperCase());
+        }
 
         imageEntry1 = (ImageView) findViewById(R.id.entry1);
         imageEntry2 = (ImageView) findViewById(R.id.entry2);
@@ -258,6 +268,8 @@ public class LoginActivity extends ActionBarActivity {
             imageButton9.setImageResource(R.drawable.button9_selector);
             imageButton0.setImageResource(R.drawable.button0_selector);
             imageBack.setImageResource(R.drawable.delete_selector);
+
+            clickCount = 0;
         }
     }
 

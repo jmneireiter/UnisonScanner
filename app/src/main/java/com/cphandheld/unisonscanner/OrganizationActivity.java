@@ -27,17 +27,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class OrganizationActivity extends ActionBarActivity
+public class OrganizationActivity extends HeaderActivity
 {
     public static final String PREFS_FILE = "SharedPrefs";
     ListView listOrganizations;
     ArrayList orgs;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organization);
+        setHeader(R.color.colorOrgHeader, getResources().getString(R.string.hello_admin), "", R.string.org_header);
 
         listOrganizations = (ListView) findViewById(R.id.listOrganizations);
         listOrganizations.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -45,9 +46,9 @@ public class OrganizationActivity extends ActionBarActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                view.setBackgroundColor(0xFFD2E4F1);
                 TextView textView = (TextView) view.findViewById(R.id.rowTextView);
-                textView.setTextColor(0XFF3F6CA6);
+                textView.setTextColor(getResources().getColor(R.color.colorOrgTextSelected));
+                view.setBackgroundColor(getResources().getColor(R.color.colorOrgBgSelected));
 
                 Organization org = (Organization)orgs.get(position);
                 int orgId = org.organizationId;
@@ -56,11 +57,8 @@ public class OrganizationActivity extends ActionBarActivity
                 SharedPreferences settings = getSharedPreferences(PREFS_FILE, 0);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putInt("orgId", orgId);
+                editor.putString("orgName", name);
                 editor.commit();
-
-                Toast toast = Toast.makeText(getApplicationContext(), name + " selected", Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.BOTTOM, 0, 75);
-                toast.show();
 
                 Intent i = new Intent(OrganizationActivity.this, LoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -125,7 +123,7 @@ public class OrganizationActivity extends ActionBarActivity
         @Override
         protected void onPostExecute(Void unused) {
             if (orgs != null && orgs.size() > 0) {
-                ArrayAdapter<Organization> adapter = new ArrayAdapter<Organization>(OrganizationActivity.this, R.layout.list_organizations, orgs);
+                ArrayAdapter<Organization> adapter = new ArrayAdapter<Organization>(OrganizationActivity.this, R.layout.generic_list, orgs);
                 listOrganizations.setAdapter(adapter);
             }
         }
@@ -152,7 +150,7 @@ public class OrganizationActivity extends ActionBarActivity
                     for (int i = 0; i < responseData.length(); i++) {
                         Organization org = new Organization();
                         JSONObject temp = responseData.getJSONObject(i);
-                        org.name = temp.getString("Title");
+                        org.name = temp.getString("Name");
                         org.organizationId = temp.getInt("OrganizationId");
                         orgs.add(org);
                     }

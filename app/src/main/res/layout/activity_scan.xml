@@ -4,58 +4,21 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/colorDefaultBg"
                 tools:context="com.cphandheld.unisonscanner.ScanActivity">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="#5BA8D3">
-
-        <TextView
-            android:id="@+id/textUser"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@android:color/white"
-            android:fontFamily="Lato Medium"
-            android:text="HELLO"
-            android:gravity="end"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="10dp" />
-
-        <TextView
-            android:id="@+id/textDealership"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@android:color/white"
-            android:fontFamily="Lato Medium"
-            android:text="DEALERSHIP"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp" />
-
-        <TextView
-            android:id="@+id/textHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="50dp"
-            android:textSize="15sp"
-            android:textColor="@android:color/white"
-            android:fontFamily="Lato Regular"
-            android:text="SCAN VEHICLE"/>
-
-    </RelativeLayout>
+    <include layout="@layout/header"></include>
 
     <TextView
         android:id="@+id/textVIN"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/white"
         android:layout_marginTop="250dp"
         android:gravity="center_horizontal"
-        android:text="- - - - - - - - - - - - - - - - -"
+        android:text="@string/empty_vin"
         android:fontFamily="Lato Medium"
-        android:textSize="24dp"
+        android:textSize="24sp"
         android:layout_marginRight="40dp"
         android:layout_marginLeft="40dp"/>
 
@@ -75,7 +38,7 @@
         android:layout_marginTop="400dp"
         android:gravity="center_horizontal"
         android:fontFamily="Lato Medium"
-        android:textSize="12dp"
+        android:textSize="12sp"
         android:layout_marginRight="40dp"
         android:layout_marginLeft="40dp"/>
 
