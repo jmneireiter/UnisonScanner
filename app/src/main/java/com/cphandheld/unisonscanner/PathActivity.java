@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,7 +57,7 @@ public class PathActivity extends HeaderActivity
                 textView.setTextColor(getResources().getColor(R.color.colorPathTextSelected));
                 view.setBackgroundColor(getResources().getColor(R.color.colorPathBgSelected));
 
-                Paths path = (Paths) paths.get(position);
+                Path path = (Path) paths.get(position);
                 int pathId = path.pathId;
                 String name = path.name;
 
@@ -144,7 +145,7 @@ public class PathActivity extends HeaderActivity
         @Override
         protected void onPostExecute(Void unused) {
             if (paths != null && paths.size() > 0) {
-                ArrayAdapter<Paths> adapter = new ArrayAdapter<Paths>(PathActivity.this, R.layout.generic_list, paths);
+                ArrayAdapter<Path> adapter = new ArrayAdapter<Path>(PathActivity.this, R.layout.generic_list, paths);
                 listPaths.setAdapter(adapter);
             }
         }
@@ -169,12 +170,18 @@ public class PathActivity extends HeaderActivity
                     paths = new ArrayList(responseData.length());
 
                     for (int i = 0; i < responseData.length(); i++) {
-                        Paths path = new Paths();
+                        Path path = new Path();
                         JSONObject temp = responseData.getJSONObject(i);
                         path.name = temp.getString("PathName");
                         path.pathId = temp.getInt("PathId");
                         paths.add(path);
                     }
+
+                    // add item for Custom Path (-1)
+                    Path p = new Path();
+                    p.name = getResources().getString(R.string.custom_path_item);
+                    p.pathId = -1;
+                    paths.add(p);
                 }
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
@@ -183,12 +190,12 @@ public class PathActivity extends HeaderActivity
         }
     }
 
-    private class Paths
+    private class Path
     {
         private String name;
         private int pathId;
 
-        public Paths()
+        public Path()
         {
 
         }

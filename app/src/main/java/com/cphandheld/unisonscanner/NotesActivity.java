@@ -1,27 +1,46 @@
 package com.cphandheld.unisonscanner;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class NotesActivity extends HeaderActivity
 {
     TextView textVIN;
     TextView textBin;
     TextView textNotesHeader;
+    EditText textNotes;
+    Button buttonCheckIn;
+
+    String errorMessage;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
-        setHeader(R.color.colorNotesHeader, Utilities.currentUser.name, Utilities.currentContext.locationName, R.string.notes_header);
+        setHeader(R.color.colorNotesHeader, Utilities.currentUser.name, Utilities.currentContext.locationName, -1, Utilities.currentContext.pathName.toUpperCase());
 
         textVIN = (TextView) findViewById(R.id.textVIN);
         textVIN.setText(Utilities.currentContext.vehicle.vin);
@@ -30,8 +49,21 @@ public class NotesActivity extends HeaderActivity
         textBin.setText(Utilities.currentContext.binName.toUpperCase());
 
         textNotesHeader = (TextView) findViewById(R.id.textNotesHeader);
-        String notesHeader = getResources().getString(R.string.notes_text_header) + " " + Utilities.currentContext.pathName.toUpperCase();
+        String notesHeader = getResources().getString(R.string.notes_text_header);
         textNotesHeader.setText(notesHeader);
+
+        textNotes = (EditText) findViewById(R.id.textNotes);
+
+        buttonCheckIn = (Button) findViewById(R.id.buttonCheckIn);
+        buttonCheckIn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Utilities.currentContext.notes = textNotes.getText().toString();
+                new CheckIn().execute();
+            }
+        });
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -64,5 +96,90 @@ public class NotesActivity extends HeaderActivity
         i.putExtra("back", true);
         setResult(RESULT_OK, i);
         finish();
+    }
+
+    private class CheckIn extends AsyncTask<String, Void, Void>
+    {
+        @Override
+        protected void onPreExecute() {
+            //Toast.makeText(getApplicationContext(), "Checking vehicle in...", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            errorMessage = "";
+
+            if (CheckInPost())
+            {
+                    Intent i = new Intent(NotesActivity.this, ScanActivity.class);
+                    startActivity(i);
+                    return null;
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            if (!errorMessage.equals(""))
+                Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show();
+        }
+
+        private boolean CheckInPost() {
+            URL url;
+            HttpURLConnection connection;
+            OutputStreamWriter request;
+            InputStreamReader isr;
+            JSONObject postData;
+            JSONObject responseData;
+            String result;
+
+            try
+            {
+                postData = new JSONObject();
+                postData.accumulate("LocationId", Utilities.currentContext.locationId);
+                postData.accumulate("BinId", Utilities.currentContext.binId);
+                postData.accumulate("PathId", Utilities.currentContext.pathId);
+                postData.accumulate("Notes", Utilities.currentContext.notes);
+                postData.accumulate("UserId", Utilities.currentUser.userId);
+                postData.accumulate("StartPath", true); // hardcoded to true for now
+
+                Gson gson = new Gson();
+                postData.put("Vehicle", gson.toJson(Utilities.currentContext.vehicle));
+
+                url = new URL(Utilities.AppURL + Utilities.VehicleCheckInURL);
+
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setFixedLengthStreamingMode(postData.toString().length());
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setRequestProperty("Content-type", "application/json");
+                connection.setRequestMethod("POST");
+
+                request = new OutputStreamWriter(connection.getOutputStream());
+                request.write(postData.toString());
+                request.flush();
+                request.close();
+
+                if (connection.getResponseCode() == 200)
+                    return true;
+                else
+                {
+                    isr = new InputStreamReader(connection.getInputStream());
+                    result = Utilities.StreamToString(isr);
+                    responseData = new JSONObject(result);
+
+                    errorMessage = responseData.getString("Message");
+                    Log.i("vehicle check in error", errorMessage);
+                    return false;
+                }
+            } catch (JSONException | IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            return false;
+        }
     }
 }

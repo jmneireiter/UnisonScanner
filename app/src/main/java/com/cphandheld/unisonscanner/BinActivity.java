@@ -54,7 +54,7 @@ public class BinActivity extends HeaderActivity
                 textView.setTextColor(getResources().getColor(R.color.colorBinTextSelected));
                 view.setBackgroundColor(getResources().getColor(R.color.colorBinBgSelected));
 
-                Bins bin = (Bins)bins.get(position);
+                Bin bin = (Bin)bins.get(position);
                 int binId = bin.binId;
                 String name = bin.name;
 
@@ -142,7 +142,7 @@ public class BinActivity extends HeaderActivity
         @Override
         protected void onPostExecute(Void unused) {
             if (bins != null && bins.size() > 0) {
-                ArrayAdapter<Bins> adapter = new ArrayAdapter<Bins>(BinActivity.this, R.layout.generic_list, bins);
+                ArrayAdapter<Bin> adapter = new ArrayAdapter<Bin>(BinActivity.this, R.layout.generic_list, bins);
                 listBins.setAdapter(adapter);
             }
         }
@@ -167,7 +167,7 @@ public class BinActivity extends HeaderActivity
                     bins = new ArrayList(responseData.length());
 
                     for (int i = 0; i < responseData.length(); i++) {
-                        Bins bin = new Bins();
+                        Bin bin = new Bin();
                         JSONObject temp = responseData.getJSONObject(i);
                         bin.name = temp.getString("BinName");
                         bin.binId = temp.getInt("BinId");
@@ -181,12 +181,12 @@ public class BinActivity extends HeaderActivity
         }
     }
 
-    private class Bins
+    private class Bin
     {
         private String name;
         private int binId;
 
-        public Bins()
+        public Bin()
         {
 
         }

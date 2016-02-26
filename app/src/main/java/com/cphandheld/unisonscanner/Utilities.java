@@ -35,6 +35,7 @@ public class Utilities {
     public static final String BinsURL = "api/Bins/Location/";
     public static final String PathURL = "api/PathTemplate/Location/";
     public static final String VehicleInfoURL = "api/TicketHeader/DecodeVin/";
+    public static final String VehicleCheckInURL = "api/Inventory/CheckIn";
 
     public static User currentUser = new User();
     public static CurrentContext currentContext = new CurrentContext();

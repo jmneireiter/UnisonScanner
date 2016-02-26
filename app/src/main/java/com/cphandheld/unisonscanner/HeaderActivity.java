@@ -23,6 +23,11 @@ abstract class HeaderActivity extends Activity
 
     protected void setHeader(int colorId, String user, String dealership, int headerId)
     {
+        setHeader(colorId, user, dealership, headerId, "");
+    }
+
+    protected void setHeader(int colorId, String user, String dealership, int headerId, String headerText)
+    {
         if(headerLayout == null)
             headerLayout = (RelativeLayout)findViewById(R.id.headerLayout);
 
@@ -50,6 +55,9 @@ abstract class HeaderActivity extends Activity
         if(textHeader == null)
             textHeader = (TextView)findViewById(R.id.textHeader);
 
-        textHeader.setText(getResources().getString(headerId));
+        if (!headerText.equals(""))
+            textHeader.setText(headerText);
+        else
+            textHeader.setText(getResources().getString(headerId));
     }
 }

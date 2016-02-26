@@ -12,9 +12,9 @@
     <string name="bin_header">SELECT BIN</string>
     <string name="vehicle_header">VEHICLE INFO</string>
     <string name="path_header">SELECT PATH</string>
-    <string name="notes_header">PATH NOTES</string>
     <string name="footer">A Product of CP Handheld</string>
     <string name="greeting">HELLO,</string>
-    <string name="notes_text_header">NOTES -</string>
+    <string name="notes_text_header">NOTES:</string>
     <string name="check_in_button">CHECK IN</string>
+    <string name="custom_path_item">Request Custom Path</string>
 </resources>
