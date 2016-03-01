@@ -14,6 +14,7 @@ public class CurrentContext implements Serializable
     int binId;
     String binName;
     int pathId;
+    boolean startPath;
     String pathName;
     String notes;
 

@@ -17,4 +17,5 @@
     <string name="notes_text_header">NOTES:</string>
     <string name="check_in_button">CHECK IN</string>
     <string name="custom_path_item">Request Custom Path</string>
+    <string name="no_path_item">No Path</string>
 </resources>

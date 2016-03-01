@@ -60,10 +60,12 @@ public class PathActivity extends HeaderActivity
                 Path path = (Path) paths.get(position);
                 int pathId = path.pathId;
                 String name = path.name;
+                boolean startPath = path.startPath;
 
                 Intent intent = new Intent(PathActivity.this, NotesActivity.class);
                 Utilities.currentContext.pathId = pathId;
                 Utilities.currentContext.pathName = name;
+                Utilities.currentContext.startPath = startPath;
                 startActivityForResult(intent, 1);
             }
         });
@@ -174,6 +176,7 @@ public class PathActivity extends HeaderActivity
                         JSONObject temp = responseData.getJSONObject(i);
                         path.name = temp.getString("PathName");
                         path.pathId = temp.getInt("PathId");
+                        path.startPath = true;
                         paths.add(path);
                     }
 
@@ -181,6 +184,14 @@ public class PathActivity extends HeaderActivity
                     Path p = new Path();
                     p.name = getResources().getString(R.string.custom_path_item);
                     p.pathId = -1;
+                    p.startPath = true;
+                    paths.add(p);
+
+                    // add item for No Path (-1)
+                    p = new Path();
+                    p.name = getResources().getString(R.string.no_path_item);
+                    p.pathId = -1;
+                    p.startPath = false;
                     paths.add(p);
                 }
             } catch (JSONException | IOException e) {
@@ -194,6 +205,7 @@ public class PathActivity extends HeaderActivity
     {
         private String name;
         private int pathId;
+        private boolean startPath;
 
         public Path()
         {

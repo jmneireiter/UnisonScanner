@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -136,21 +137,22 @@ public class NotesActivity extends HeaderActivity
 
             try
             {
-                postData = new JSONObject();
-                postData.accumulate("LocationId", Utilities.currentContext.locationId);
-                postData.accumulate("BinId", Utilities.currentContext.binId);
-                postData.accumulate("PathId", Utilities.currentContext.pathId);
-                postData.accumulate("Notes", Utilities.currentContext.notes);
-                postData.accumulate("UserId", Utilities.currentUser.userId);
-                postData.accumulate("StartPath", true); // hardcoded to true for now
+                CheckInPost cip = new CheckInPost();
+                cip.locationId = Utilities.currentContext.locationId;
+                cip.binId = Utilities.currentContext.binId;
+                cip.pathId = Utilities.currentContext.pathId;
+                cip.notes = Utilities.currentContext.notes;
+                cip.userId = Utilities.currentUser.userId;
+                cip.startPath = Utilities.currentContext.startPath;
+                cip.vehicle = Utilities.currentContext.vehicle;
 
                 Gson gson = new Gson();
-                postData.put("Vehicle", gson.toJson(Utilities.currentContext.vehicle));
+                String json = gson.toJson(cip);
 
                 url = new URL(Utilities.AppURL + Utilities.VehicleCheckInURL);
 
                 connection = (HttpURLConnection) url.openConnection();
-                connection.setFixedLengthStreamingMode(postData.toString().length());
+                connection.setFixedLengthStreamingMode(json.length());
                 connection.setDoOutput(true);
                 connection.setDoInput(true);
                 connection.setRequestProperty("Accept", "application/json");
@@ -158,7 +160,7 @@ public class NotesActivity extends HeaderActivity
                 connection.setRequestMethod("POST");
 
                 request = new OutputStreamWriter(connection.getOutputStream());
-                request.write(postData.toString());
+                request.write(json);
                 request.flush();
                 request.close();
 
@@ -181,5 +183,22 @@ public class NotesActivity extends HeaderActivity
 
             return false;
         }
+    }
+
+    public class CheckInPost implements Serializable
+    {
+        int locationId;
+        int binId;
+        int pathId;
+        String notes;
+        int userId;
+        boolean startPath;
+        Vehicle vehicle;
+
+
+        CheckInPost() {
+        }
+
+
     }
 }
